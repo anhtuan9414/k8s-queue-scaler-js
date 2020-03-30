@@ -18,6 +18,7 @@ module.exports = class Autoscaler {
     this.queues = this.options.queueNames.map(name => bull(name, {
       createClient: () => new Redis(this.options.redisUrl)
     }));
+    this.scaleHandler = this.scaleHandler.bind(this);
   }
 
   init () {
@@ -43,31 +44,34 @@ module.exports = class Autoscaler {
   }
 
   poll () {
-    setInterval(async () => {
-      this.messageCount = await this.getMessageCount();
+    this.scaleHandler();
+    setInterval(this.scaleHandler, this.options.pollPeriod || 20000);
+  }
 
-      if (typeof this.messageCount === 'number') {
-        const now = new Date().getTime();
+  async scaleHandler () {
+    this.messageCount = await this.getMessageCount();
 
-        if (this.messageCount > this.options.messagesPerPod) {
-          if (now - this.lastScaleUpTime > this.options.scaleUpWait) {
-            await this.scaleUp();
-            this.lastScaleUpTime = now;
-          } else {
-            console.log('Waiting for scale up cooldown');
-          }
-        }
+    if (typeof this.messageCount === 'number') {
+      const now = new Date().getTime();
 
-        if (this.messageCount < this.options.messagesPerPod) {
-          if (now - this.lastScaleDownTime > this.options.scaleDownWait) {
-            await this.scaleDown();
-            this.lastScaleDownTime = now;
-          } else {
-            console.log('Waiting for scale down cooldown');
-          }
+      if (this.messageCount > this.options.messagesPerPod) {
+        if (now - this.lastScaleUpTime > this.options.scaleUpWait) {
+          await this.scaleUp();
+          this.lastScaleUpTime = now;
+        } else {
+          console.log('Waiting for scale up cooldown');
         }
       }
-    }, this.options.pollPeriod || 20000);
+
+      if (this.messageCount < this.options.messagesPerPod) {
+        if (now - this.lastScaleDownTime > this.options.scaleDownWait) {
+          await this.scaleDown();
+          this.lastScaleDownTime = now;
+        } else {
+          console.log('Waiting for scale down cooldown');
+        }
+      }
+    }
   }
 
   async scaleUp () {
