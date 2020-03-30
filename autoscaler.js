@@ -31,8 +31,9 @@ module.exports = class Autoscaler {
     try {
       let total = 0;
       for (let queue of this.queues) {
-        console.log(`Job counts - queue [${queue.name}] - ${JSON.stringify(await queue.getJobCounts())}`);
-        total += await queue.count();
+        const data = await queue.getJobCounts();
+        console.log(`Job counts - queue [${queue.name}] - ${JSON.stringify(data)}`);
+        total += data.waiting + data.active + data.delayed;
       }
       return Promise.resolve(total);
     } catch (err) {
