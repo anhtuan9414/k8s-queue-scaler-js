@@ -11,7 +11,7 @@ const auto = new Autoscaler({
   k8sNamespace: 'default',
   k8sDeployment: 'qa-plat-crawl-manager-deployment',
   redisUrl: 'redis://127.0.0.1:6379/',
-  queueName: 'CRAWL_RESPONSE_QUEUE_NAME',
+  queueNames: ['CRAWL_RESPONSE_QUEUE_NAME'],
   k8sConfig: {
     apiVersion: 'v1',
     kind: 'Config',

@@ -15,9 +15,9 @@ module.exports = class Autoscaler {
     this.lastScaleDownTime = new Date().getTime();
     this.messageCount = 0;
     this.options = options;
-    this.queue = bull(this.options.queueName, {
+    this.queues = this.options.queueNames.map(name => bull(name, {
       createClient: () => new Redis(this.options.redisUrl)
-    });
+    }));
   }
 
   init () {
@@ -29,8 +29,12 @@ module.exports = class Autoscaler {
 
   async getMessageCount () {
     try {
-      console.log(`Job counts ${JSON.stringify(await this.queue.getJobCounts())}`);
-      return await this.queue.count();
+      let total = 0;
+      for (let queue of this.queues) {
+        console.log(`Job counts - queue [${queue.name}] - ${JSON.stringify(await queue.getJobCounts())}`);
+        total += await queue.count();
+      }
+      return Promise.resolve(total);
     } catch (err) {
       console.error(`Failed to get message count: ${err.message}`);
       return null;
@@ -77,7 +81,7 @@ module.exports = class Autoscaler {
           newReplicas = this.options.maxPods;
         }
 
-        console.log(`Scaling up to ${newReplicas} - message counts in queue [${this.queue.name}]: ${this.messageCount}`);
+        console.log(`Scaling up to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
         deployment.spec.replicas = newReplicas;
         await this.updateDeployment(deployment);
       } else if (deployment.spec.replicas > this.options.maxPods || deployment.spec.replicas > newReplicas) {
@@ -100,7 +104,7 @@ module.exports = class Autoscaler {
           newReplicas = this.options.minPods;
         }
 
-        console.log(`Scaling down to ${newReplicas} - message counts in queue [${this.queue.name}]: ${this.messageCount}`);
+        console.log(`Scaling down to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
         deployment.spec.replicas = newReplicas;
         await this.updateDeployment(deployment);
       } else if (deployment.spec.replicas < this.options.minPods || deployment.spec.replicas < newReplicas) {
