@@ -59,7 +59,7 @@ module.exports = class Autoscaler {
           await this.scaleUp();
           this.lastScaleUpTime = now;
         } else {
-          console.log('Waiting for scale up cooldown');
+          console.log(`[${this.options.k8sDeployment}] - Waiting for scale up cooldown`);
         }
       }
 
@@ -68,7 +68,7 @@ module.exports = class Autoscaler {
           await this.scaleDown();
           this.lastScaleDownTime = now;
         } else {
-          console.log('Waiting for scale down cooldown');
+          console.log(`[${this.options.k8sDeployment}] - Waiting for scale down cooldown`);
         }
       }
     }
@@ -86,13 +86,13 @@ module.exports = class Autoscaler {
           newReplicas = this.options.maxPods;
         }
 
-        console.log(`Scaling up to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
+        console.log(`[${this.options.k8sDeployment}] - Scaling up to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
         deployment.spec.replicas = newReplicas;
         await this.updateDeployment(deployment);
       } else if (deployment.spec.replicas > this.options.maxPods || deployment.spec.replicas > newReplicas) {
         await this.scaleDown();
       } else {
-        console.log(`Max pods reached - newReplicas: ${newReplicas}`);
+        console.log(`[${this.options.k8sDeployment}] - Max pods reached - newReplicas: ${newReplicas}`);
       }
     }
   }
@@ -109,13 +109,13 @@ module.exports = class Autoscaler {
           newReplicas = this.options.minPods;
         }
 
-        console.log(`Scaling down to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
+        console.log(`[${this.options.k8sDeployment}] - Scaling down to ${newReplicas} - message counts in queue [${this.options.queueNames.join(', ')}]: ${this.messageCount}`);
         deployment.spec.replicas = newReplicas;
         await this.updateDeployment(deployment);
       } else if (deployment.spec.replicas < this.options.minPods || deployment.spec.replicas < newReplicas) {
         await this.scaleUp();
       } else {
-        console.log(`Min pods reached - newReplicas: ${newReplicas}`);
+        console.log(`[${this.options.k8sDeployment}] - Min pods reached - newReplicas: ${newReplicas}`);
       }
     }
   }
