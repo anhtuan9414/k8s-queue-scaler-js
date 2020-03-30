@@ -22,7 +22,11 @@
   },
   "homepage": "https://github.com/anhtuan9414/k8s-queue-scaler#readme",
   "dependencies": {
+    "bull": "^3.13.0",
     "got": "^10.6.0",
-    "kubernetes-client": "^8.3.6"
+    "ioredis": "^4.16.1",
+    "kubernetes-client": "^8.3.6",
+    "lodash": "^4.17.15",
+    "pm2": "^4.2.3"
   }
 }
