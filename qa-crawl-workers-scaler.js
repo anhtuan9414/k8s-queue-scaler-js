@@ -16,20 +16,20 @@ const auto = new Autoscaler({
     apiVersion: 'v1',
     kind: 'Config',
     preferences: {},
-    'current-context': 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
+    'current-context': 'qa-hd-bpo-cluster',
     contexts: [
       {
-        name: 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
+        name: 'qa-hd-bpo-cluster',
         context:  {
-          cluster: 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
-          name: 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
-          user: 'gke_precise_us-central1-a_qa-hd-bpo-cluster'
+          cluster: 'qa-hd-bpo-cluster',
+          name: 'qa-hd-bpo-cluster',
+          user: 'qa-hd-bpo-cluster'
         }
       }
     ],
     clusters: [
       {
-        name: 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
+        name: 'qa-hd-bpo-cluster',
         cluster: {
           'certificate-authority-data': Buffer.from(fs.readFileSync(path.join(__dirname, './qa_cluster.pem'), 'utf8')).toString('base64'),
           server: 'https://34.66.62.102'
@@ -38,7 +38,7 @@ const auto = new Autoscaler({
     ],
     users: [
       {
-        name: 'gke_precise_us-central1-a_qa-hd-bpo-cluster',
+        name: 'qa-hd-bpo-cluster',
         user: {
           'auth-provider': {
             config: {
