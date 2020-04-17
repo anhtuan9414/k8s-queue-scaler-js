@@ -1,0 +1,32 @@
+{
+  "name": "k8s-queue-scaler",
+  "version": "1.0.0",
+  "description": "Kubernetes Queue Scaler",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anhtuan9414/k8s-queue-scaler.git"
+  },
+  "keywords": [
+    "k8s",
+    "queue",
+    "scaler"
+  ],
+  "author": "tuanna",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anhtuan9414/k8s-queue-scaler/issues"
+  },
+  "homepage": "https://github.com/anhtuan9414/k8s-queue-scaler#readme",
+  "dependencies": {
+    "bull": "^3.13.0",
+    "got": "^10.6.0",
+    "ioredis": "^4.16.1",
+    "kubernetes-client": "^8.3.6",
+    "lodash": "^4.17.15",
+    "pm2": "^4.2.3"
+  }
+}
